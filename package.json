@@ -11,7 +11,7 @@
     "main": "./core/index",
     "script": {
         "start": "node index",
-        "test": "node test"
+      "test": "./node_modules/.bin/grunt validate --verbose"
     },
     "repository" : {
         "type": "git",
