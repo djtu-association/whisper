@@ -7,6 +7,7 @@ node_modules/
 # other #
 .DS_STORE
 bower_components/
+npm-debug.log
 
 # local config file #
 config.js
