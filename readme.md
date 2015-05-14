@@ -52,13 +52,22 @@ Whispers是[iCollege](https://42.96.195.83/guanggu/icollege)项目的即时通信模块。
 ### 项目所用技术及依赖开发者
 
 #### 技术与依赖（NPM依赖名，按字母表顺序）
-[bluebird](https://github.com/bluebird),[colors](https://github.com/Marak/colors.js), 
-[express](http://expressjs.com/),[lodash](https://lodash.com/),
+[bluebird](https://github.com/bluebird), 
+[bower](http://bower.io/), 
+[bytes](https://github.com/visionmedia/bytes.js), 
+[colors](https://github.com/Marak/colors.js), 
+[express](http://expressjs.com/), 
+[grunt](http://gruntjs.com/), 
+[lodash](https://lodash.com/), 
 [method-override](https://github.com/expressjs/method-override), 
-[node.js](https://nodejs.org/), [nodestalker](https://github.com/pascalopitz/nodestalker), 
-[semver](https://github.com/npm/node-semver),[serve-favicon](https://github.com/expressjs/serve-favicon), 
-[socket.io](http://socket.io/),
-
+[morgan](https://github.com/expressjs/morgan), 
+[node.js](https://nodejs.org/), 
+[nodestalker](https://github.com/pascalopitz/nodestalker), 
+[semver](https://github.com/npm/node-semver), 
+[serve-favicon](https://github.com/expressjs/serve-favicon), 
+[socket.io](http://socket.io/), 
+[unidecode](https://github.com/FGRibreau/node-unidecode), 
+[validator](https://github.com/chriso/validator.js)    
+#### 曾经使用的技术与依赖
 ### 项目团队以外的贡献者
-
 ### 以及积极提供反馈的各位用户
