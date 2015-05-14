@@ -25,6 +25,9 @@ function init(options) {
         //console.log(config);
         return config.checkDeprecated();
     }).then(function () {
+        // pass server to im logic
+        middleware.server(server);
+        middleware.im(application);
         // return the correct mime type for woff filess
         express['static'].mime.define({'application/font-woff': ['woff']});
 
