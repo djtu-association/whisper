@@ -1,14 +1,15 @@
-# Whispers 自述文件
+# whisper 自述文件
+[English](# whisper Readme)
 ## 目录
 
-## Whispers是什么？
-Whispers是[iCollege](https://42.96.195.83/guanggu/icollege)项目的即时通信模块。  
+## whisper是什么？
+whisper是[iCollege](https://42.96.195.83/guanggu/icollege)项目的即时通信模块。  
 她通过已有的RESTful API与服务器响应，同时保证与相应移动端应用（App）保持即时通信连接，  
 目的则是允许用户在信赖的网络环境中进行安全流畅的单/多人即时通信。
 ## 更新日志
 
 **警告：目前项目处于早期版本。这意味着该程序可能无法按照您的预期工作。  
-  如果有任何问题，请在[这里](https://42.96.195.83/association/whispers/issues)提出。**
+  如果有任何问题，请在[这里](https://42.96.195.83/association/whisper/issues)提出。**
   
 ***
 
@@ -19,7 +20,7 @@ Whispers是[iCollege](https://42.96.195.83/guanggu/icollege)项目的即时通信模块。
       -- 《三五历纪》 徐整
       
     * **由于项目仍然处于早期版本，使用过程中会出现大量的调试输出。**
-    * 项目结构及基本启动代码完成。([01d10efd](https://42.96.195.83/association/whispers/commit/01d10efdaec7724b394b8ad3d297db547bbe0eed))  
+    * 项目结构及基本启动代码完成。([01d10efd](https://42.96.195.83/association/whisper/commit/01d10efdaec7724b394b8ad3d297db547bbe0eed))  
 
 ## 即将到来
 **警告：在这里出现的内容将在以后版本中出现。  
@@ -74,3 +75,6 @@ Whispers是[iCollege](https://42.96.195.83/guanggu/icollege)项目的即时通信模块。
 #### 曾经使用的技术与依赖
 ### 项目团队以外的贡献者
 ### 以及积极提供反馈的各位用户
+
+# whisper Readme
+[中文](# whisper 自述文件)

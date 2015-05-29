@@ -1,12 +1,12 @@
 {
-    "name": "whispers",
+    "name": "whisper",
     "version": "0.0.0",
     "description": "Instant Messaging component for iCollege",
     "keywords": [
         "IM",
         "iCollege"
     ],
-    "contributors": "https://42.96.195.83/association/whispers/graphs/master",
+    "contributors": "https://42.96.195.83/association/whisper/graphs/master",
 
     "main": "./core/index",
     "scripts": {
@@ -15,11 +15,11 @@
     },
     "repository" : {
         "type": "git",
-        "url": "https://42.96.195.83/association/whispers.git"
+        "url": "https://42.96.195.83/association/whisper.git"
     },
     "bugs" : {
         "email": "psioniccat.programming@outlook.com",
-        "url": "https://42.96.195.83/association/whispers/issues"
+        "url": "https://42.96.195.83/association/whisper/issues"
     },
 
     "engines": {
@@ -27,6 +27,7 @@
     },
     "engineStrict": true,
     "dependencies": {
+        "dnode": "~1.2.1",
         "express": "4.10.6",
         "socket.io": "~1.3.5",
         "socket.io-stream": "0.6.0",
