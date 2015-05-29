@@ -1,5 +1,5 @@
 # whisper 自述文件
-[English](# whisper Readme)
+[English](#2)
 ## 目录
 
 ## whisper是什么？
@@ -29,9 +29,10 @@ whisper是[iCollege](https://42.96.195.83/guanggu/icollege)项目的即时通信模块。
 
 * 去除多余的调试信息。  
 * 中间件、路由和控制器模块完善。
-* 建立完整的错误/提示回报机制。  
+* （完成）建立完整的错误/提示回报机制。（[e59f6a39](https://42.96.195.83/association/whisper/commit/e59f6a39ab082ff70d04084fb90a1eda14979b10)）
 * 建立基于grunt的早期测试框架。  
-* 由于本项目不再需要某些机制，我们正在考虑放弃使用express而改用dnode。  
+* （优先）由于本项目不再需要某些机制，我们正在考虑放弃使用express而改用dnode。  
+* 基于markdown语法的代码自文档化。
 
 ## 我该怎样……
 ### 安装
@@ -77,4 +78,4 @@ whisper是[iCollege](https://42.96.195.83/guanggu/icollege)项目的即时通信模块。
 ### 以及积极提供反馈的各位用户
 
 # whisper Readme
-[中文](# whisper 自述文件)
+[中文](#1)
