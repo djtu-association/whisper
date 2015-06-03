@@ -1,46 +1,38 @@
 /**
- * Created by PsionicCat Balflear on 2015/5/3.
+ * # server construction - middleware wrapper
+ * we have 2 steps to construct a whisper server:
+ *     1. wrapping middleware to our server
+ *     2. adding several basic server-scoped functions like start(), stop()
+ * here is the first step
+ * @author PsionicCat Balflear (Wanbo Lu)
+ * @type {exports|module.exports} init
  */
 
-var express         = require('express'),
-    http             = require('http'),
-    socketIO        = require('socket.io'),
-    Promise         = require('bluebird'),
-    methodOverride = require('method-override'),
+var http              = require('http'),
+    socketIO          = require('socket.io'),
 
-    Server           = require('./whispers-server'),
-    config           = require('./config'),
-    middleware      = require('./middleware');
+    Server             = require('./whisper-server'),
+    config              = require('./config'),
+    middleware       = require('./middleware'),
+
+    init;
 
 
-function init(options) {
-    console.log('.\\core\\server\\index.js\n');
-
-    var expressApp = express(),
-        server = http.Server(expressApp),
-        application = socketIO(server);
+init =  function init (options) {
+    var server = http.createServer(),
+        app = socketIO(server);
 
     return config.load(options.config).then(function () {
-        console.log('config.load completed');
-        //console.log(config);
         return config.checkDeprecated();
     }).then(function () {
-        // pass server to im logic
+        // dnode emitting functions wrapped by middleware
         middleware.server(server);
-        middleware.im(application);
-        // return the correct mime type for woff filess
-        express['static'].mime.define({'application/font-woff': ['woff']});
 
-        // enabled gzip compression by default
-        //if (config.server.compress !== false) {
-        //    application.use(compress());
-        //}
+        // socket.io emitting functions also wrapped by middleware
+        middleware.im(app);
 
-        // override with http method having ?_method=DELETE or something else
-        application.use(methodOverride('_method'));
-        console.log('return new server');
-        return new Server(server, application);
+        return new Server(server);
     });
-}
+};
 
 module.exports = init;

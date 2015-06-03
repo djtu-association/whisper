@@ -1,17 +1,15 @@
 /**
- * # whisper Bootloader
- * Created by PsionicCat Balflear on 2015/4/21.
+ * # whisper Bootloader - standalone bootloader
+ * @author PsionicCat Balflear (Wanbo Lu)
  */
 
-var express      = require('express'),
-    socketIO      = require('socket.io'),
-    whisper      = require('./core'),
-    errors        = require('./core/server/errors');
+var whisper = require('./core'),
+    logger    = require('./core/server/logger');
 
-    //parentServer  = express(),
-    //parentApp     = socketIO();
-
+// initialize whisper server
 whisper().then(function (whisperServer) {
-
+    // let whisper start
     whisperServer.start();
+}).catch(function (error) {
+    logger.panic(error);
 });

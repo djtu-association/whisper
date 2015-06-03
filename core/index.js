@@ -1,14 +1,15 @@
 /**
- * # whispers bootloader
- * Created by PsionicCat Balflear on 2015/4/21.
+ * # whisper bootloader - dependency bootloader
+ * @author PsionicCat Balflear (Wanbo Lu)
  */
 
 var server = require('./server');
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
+// if whisper is been required instead of standalone booting,
+// we need options with config json to keep whisper working
 function createServer(options) {
-    console.log('createServer');
     options = options || {};
 
     return server(options);

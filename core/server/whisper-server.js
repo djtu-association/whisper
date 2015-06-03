@@ -1,5 +1,6 @@
 /**
- * Created by Íò²© on 2015/5/4.
+ * @author PsionicCat Balflear (Wanbo Lu)
+ * @type {Promise|exports|module.exports} required server object with basic functions
  */
 
 var Promise     = require('bluebird'),
@@ -7,15 +8,15 @@ var Promise     = require('bluebird'),
     semver = require('semver'),
 
     packageInfo = require('../../package.json'),
-    errors       = require('./errors'),
+    logger = require('./logger'),
     config       = require('./config'),
+    middleware = require('./middleware'),
 
     Server;
 
-Server = function Server(rootServer, rootApp) {
-    console.log('whispers-server.js on');
+
+Server = function Server (rootServer) {
     this.rootServer = rootServer;
-    this.rootApp = rootApp;
     this.workingServer = null;
     this.connections = {};
     this.connectionId = 0;
@@ -29,13 +30,13 @@ Server.prototype.connection = function (socket) {
     var self = this;
 
     self.connectionId += 1;
-    socket._whispersId = self.connectionId;
+    socket._whisperId = self.connectionId;
 
     socket.on('close', function () {
-        delete self.connections[this._whispersId];
+        delete self.connections[this._whisperId];
     });
 
-    self.connections[socket._whispersId] = socket;
+    self.connections[socket._whisperId] = socket;
 };
 
 // Most browsers keep a persistent connection open to the server
@@ -54,79 +55,62 @@ Server.prototype.closeConnections = function () {
 };
 
 Server.prototype.logStartMessages = function () {
+    var message, detail, hint;
     // Tell users if their node version is not supported, and exit
     if (!semver.satisfies(process.versions.node, packageInfo.engines.node)) {
-        console.log(
-            '\nERROR: Unsupported version of Node'.red,
-            '\nwhispers needs Node version'.red,
-            packageInfo.engines.node.yellow,
-            'you are using version'.red,
-            process.versions.node.yellow,
-            '\nPlease go to http://nodejs.org to get a supported version'.green
-        );
-
-        process.exit(0);
+        message = "Unsupported version of Node.js engine";
+        detail = "whisper needs Node.js version: " + packageInfo.engines.node + ". " +
+            "you are using version: " + process.versions.node;
+        hint = "Please go to https://nodejs.org to get a supported version";
+        logger.panic(message, detail, hint);
     }
 
     // Startup & Shutdown messages
     if (process.env.NODE_ENV === 'production') {
-        console.log(
-            'whispers is running...'.green,
-            '\nYour host is now available on',
-            config.url,
-            '\nCtrl+C to shut down'.grey
-        );
+        message = 'whisper is running. :-)';
+        detail = 'Your host is now available on' + config.url;
+        hint = 'press Ctrl + C to shut down';
+        logger.startup(message, detail, hint);
     } else {
-        var str = 'whispers is running in ' + process.env.NODE_ENV + '...';
-        console.log(str);
-        console.log(config.server.host);
-        console.log('Listening on' + (config.getSocket() || config.server.host) + ':' + config.server.port);
-        console.log('\nUrl configured as:' + config.url);
-        console.log('Ctrl+C to shut down'.grey);
+        message = 'whisper is running in ' + process.env.NODE_ENV + ' environment. :-)';
+        detail = 'Socket IO server listening on ' +
+            (config.getSocket() || config.server.host + ':' + config.server.port) +
+            '\n Url configured as: ' + config.url;
+        hint = 'press Ctrl + C to shut down';
+        logger.startup(message, detail, hint);
     }
 
+    // invoking this may cause a shutdown
     function shutdown() {
-        console.log('\nwhispers has shut down'.red);
+        var message = 'whisper has shut down. ',
+            detail;
         if (process.env.NODE_ENV === 'production') {
-            console.log(
-                '\nYour host is now offline'
-            );
+            detail = '\nYour host is now offline. ';
         } else {
-            console.log(
-                '\nwhispers was running for',
-                Math.round(process.uptime()),
-                'seconds'
-            );
+            detail = '\nwhisper was running for ' + Math.round(process.uptime()) + ' seconds';
         }
-        process.exit(0);
+        logger.shutdown(message, detail);
     }
-    // ensure that whispers exits correctly on Ctrl+C and SIGTERM
+    // ensure that whisper exits correctly on Ctrl+C and SIGTERM
     process.
         removeAllListeners('SIGINT').on('SIGINT', shutdown).
         removeAllListeners('SIGTERM').on('SIGTERM', shutdown);
 };
 
 Server.prototype.logUpgradeWarning = function () {
-    //todo: log this error: startup timeout as an npm module
-    //errors.logWarn(
-    //    'whispers no longer starts automatically when using it as an npm module.',
-    //    'If you\'re seeing this message, you may need to update your custom code.',
-    //    'Please see the docs at http://tinyurl.com/npm-upgrade for more information.'
-    //);
-    console.log('error: whispers system does not start automatically. plz check your custom code');
+    var message = 'whisper startup is timeout',
+        detail = 'whisper do not starts automatically when using it as an npm module. ',
+        hint = 'If you\'re seeing this message, you may need to check your custom code. ';
+    logger.warn(message, detail, hint);
 };
 
-Server.prototype.start = function (externalServer, externalApp) {
-    console.log('server prototype start');
+Server.prototype.start = function (externalServer) {
     var self = this,
-        rootServer = externalServer ? externalServer : self.rootServer,
-        rootApp = externalApp ? externalApp : self.rootApp;
+        rootServer = externalServer ? externalServer : self.rootServer;
 
-    // ## Start whispers App
+    // ## Start whisper App
     return new Promise(function (resolve) {
-        console.log('server start returning');
         if (config.getSocket()) {
-            console.log('server getSocket');
             // Make sure the socket is gone before trying to create another
             try {
                 fs.unlinkSync(config.getSocket());
@@ -136,27 +120,26 @@ Server.prototype.start = function (externalServer, externalApp) {
 
             self.workingServer = rootServer.listen(config.getSocket());
 
+            // lock current socket with opcodes:
+            // 0660 => rw-rw-----
+            // > search **chmod** for more information
             fs.chmod(config.getSocket(), '0660');
         } else {
-            console.log('start lestening on ' + config.server.port);
-            self.workingServer = rootServer.listen(config.server.port);
+            self.workingServer = rootServer.listen(config.server.port, config.server.host);
+            middleware.dnode(self.workingServer);
         }
 
         self.workingServer.on('error', function (error) {
+            var message, detail, hint;
             if (error.errno === 'EADDRINUSE') {
-                //errors.logError(
-                console.log(
-                    '(EADDRINUSE) Cannot start whispers.',
-                    'Port ' + config.server.port + ' is already in use by another program.',
-                    'Is another whispers instance already running?'
-                );
+                message = '(EADDRINUSE) Cannot start whisper. ';
+                detail = 'Port' + config.server.port + ' is already in use by another program. ';
+                hint = 'Is another whisper instance already running? ';
+                logger.error(message, detail, hint);
             } else {
-                //errors.logError(
-                console.log(
-                    '(Code: ' + error.errno + ')',
-                    'There was an error starting your server.',
-                    'Please use the error code above to search for a solution.'
-                );
+                message = 'Code: ' + error.errno + '. ';
+                detail = 'Please use the error code above to search for a solution';
+                logger.error(message, detail);
             }
             process.exit(-1);
         });
@@ -192,7 +175,7 @@ Server.prototype.restart = function () {
 };
 
 Server.prototype.logShutdownMessages = function () {
-    console.log('whispers is closing connections'.red);
+    console.log('whisper is closing connections'.red);
 };
 
 module.exports = Server;
