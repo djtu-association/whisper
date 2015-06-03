@@ -1,18 +1,13 @@
 /**
- * Created by Íò²© on 2015/5/14.
+ * server-side middleware
+ * @type {posix|exports|module.exports} middleware installer
  */
-var path        = require('path'),
 
-    express     = require('express'),
-    favicon     = require('serve-favicon'),
-    logger      = require('morgan'),
+var setupMiddleware;
 
-    config      = require('../config'),
-//utils       = require('../../shared/utils'),
-    expressServer,
-    setupMiddleware;
-
-setupMiddleware = function (server) {
+// the server created can be argument of setupMiddleware()
+setupMiddleware = function () {
+    //dnode.listen(server);
     //var logging = config.logging,
     //    subdir = config.paths.subdir,
     //    contentPath = config.paths.contentPath,

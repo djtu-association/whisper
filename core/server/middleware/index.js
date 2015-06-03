@@ -1,11 +1,15 @@
 /**
- * Created by Íò²© on 2015/5/3.
+ * # middleware hub
+ * @author PsionicCat Balflear (Wanbo Lu)
+ * @type {setupMiddleware|exports|module.exports}
  */
 var serverMiddleware = require('./server'),
-    imMiddleware = require('./im');
+    imIntergration = require('./im-integration'),
+    dnodeIntergration = require('./dnode-integration');
 
-
+//is server middleware necessary now?
 module.exports = {
     server: serverMiddleware,
-    im: imMiddleware
+    im: imIntergration,
+    dnode: dnodeIntergration
 };
