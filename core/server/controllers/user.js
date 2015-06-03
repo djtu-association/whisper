@@ -1,5 +1,5 @@
 /**
- * Created by �� on 2015/5/19.
+ * Created by 陈瑞 on 2015/6/3.
  */
 
 var path          = require('path'),
@@ -10,7 +10,7 @@ var path          = require('path'),
     config        = require('../../shared/config'),
     utils         = require('../../shared/utils'),
     userControllers;
-avatar = {},
+    avatar = {},
     totalusers = {},                   //所有的用户
     users ={},                          //某一房间里的所有用户
     totalrooms = {},                   //所有的房间
