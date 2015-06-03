@@ -1,5 +1,5 @@
 /**
- * Created by Íò²© on 2015/5/14.
+ * Created by ï¿½ï¿½ on 2015/5/14.
  */
 var ss         = require('socket.io-stream'),
     user       = require('../controllers/user'),
@@ -11,7 +11,7 @@ userRoutes = function (socket) {
 
     socket.on('initialize user', user.initializeUser(socket));
 
-    socket.on('disconnect', user.signOff(socket));
+    //socket.on('disconnect', user.signOff(socket));
 
     socket.on('create room', user.createRoom(socket));
 
