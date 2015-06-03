@@ -17,6 +17,23 @@ colors.setTheme({silly: 'rainbow'});
 
 logger = {
     // ## basic operations
+    print: function (message, detail, hint) {
+        var env = process.env.NODE_ENV,
+            msg;
+        if (env === 'development' || env === 'staging' || env === 'production') {
+            msg = [(_.isString(message) ? message : ''), '\n'];
+
+            if (detail) {
+                msg.push(detail, '\n');
+            }
+
+            if (hint) {
+                msg.push(hint, '\n');
+            }
+
+            console.log.apply(console, msg);
+        }
+    },
     /**
      * ### info: log an info
      * @param component
@@ -26,7 +43,7 @@ logger = {
         var env = process.env.NODE_ENV,
             msg;
         if (env === 'development' || env === 'staging' || env === 'production') {
-            msg = [component.cyan + ':'.cyan, message.cyan];
+            msg = ['[INFO]'.cyan, component.cyan, ':'.cyan, message.cyan, '\n'];
 
             console.info.apply(console, msg);
         }
@@ -51,14 +68,15 @@ logger = {
             if (hint) {
                 msg.push(hint.green, '\n');
             }
-            console.log.apply(console, msg);
+            console.warn.apply(console, msg);
         }
     },
     /**
      * ### reject: return a rejected promise to keep proceeding promise loop working
-     * @param message reject message
+     * @param message rejecting message
      */
     reject: function (message) {
+        message = _.isString(message) ? new Error(message) : message;
         return Promise.reject(message);
     },
     /**
@@ -78,7 +96,7 @@ logger = {
         // if numbers of errors threw at the same time,
         // we can process them recursively
         if (_.isArray(message)) {
-            _.each(error, function (error) {
+            _.each(message, function (error) {
                 var newArgs = [error].concat(originArgs);
                 logger.error.apply(self, newArgs);
             });
@@ -111,13 +129,14 @@ logger = {
             if (stack) {
                 msg.push(stack, '\n');
             }
-            console.info.apply(console, msg);
+            console.error.apply(console, msg);
         }
     },
     /**
      * ### throwError: throw an error
      * throw is a node.js keyword. maybe name this function as thr0w is better?
-     * @param message error message
+     * @param message required error message
+     * @throws EcmaScript error
      */
     throwError: function (message) {
         if (!message) {
@@ -127,10 +146,56 @@ logger = {
         if(_.isString(message)) {
             throw new Error(message);
         }
+
+        throw message;
     },
     // ## advanced operations
     /**
-     * ### panic: panic means there is a serious error and the program cannot proceed
+     * startup is used **ONLY** when a whisper server is initializing
+     * @param message welcome message
+     * @param detail details about server startup
+     * @param hint hints about commands of running instance
+     */
+    startup: function (message, detail, hint) {
+        var msg;
+        if (_.isString(message)) {
+            msg = ['\n' + message.green + '\n'];
+        } else {
+            msg = ['\nwhisper is running. \n'.green];
+        }
+
+        if (_.isString(detail)) {
+            msg.push(detail, '\n');
+        }
+
+        if (_.isString(hint)) {
+            msg.push(hint.grey, '\n');
+        }
+
+        console.log.apply(console, msg);
+    },
+    /**
+     * shutdown is used **ONLY** when whisper is shutting down **WITHOUT** any error
+     * @param message
+     * @param detail
+     */
+    shutdown: function (message, detail) {
+        var msg;
+        if (_.isString(message)) {
+            msg = ['\n', message.red];
+        } else {
+            msg = ['\nwhisper has shut down. \n'.red];
+        }
+
+        if (_.isString(detail)) {
+            msg.push(detail, '\n');
+        }
+
+        console.log.apply(console, msg);
+        process.exit(0);
+    },
+    /**
+     * ### panic: log an error and exit with 0
      * @param message error message
      * @param detail details of this error
      * @param hint hint for solving this error
