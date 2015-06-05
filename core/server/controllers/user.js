@@ -8,13 +8,17 @@ var path          = require('path'),
     bytes         = require('bytes'),
     errors        = require('../../shared/errors'),
     config        = require('../../shared/config'),
-    utils         = require('../../shared/utils'),
+    utils         = require('../../server/utils/index'),
     userControllers;
     avatar = {},
-    totalusers = {},                   //所有的用户
-    users ={},                          //某一房间里的所有用户
-    totalrooms = {},                   //所有的房间
-    rooms = {},                         //每个用户有一个"rooms"，存有用户所在的房间
+    //所有的用户
+    totalusers = {},
+    //某一房间里的所有用户
+    users ={},
+    //所有的房间
+    totalrooms = {},
+    //每个用户有一个"rooms"，存有用户所在的房间
+    rooms = {},
     username = {},
     signature = {};
 
@@ -25,7 +29,8 @@ userControllers = {
     checkNickname: function (socket) {
         return function (data) {
             var res;
-            if (!totalusers[data.nickname]) {             //在所有的用户中检查该昵称是否已被使用
+            //在所有的用户中检查该昵称是否已被使用
+            if (!totalusers[data.nickname]) {
                 res = {success: true};
             } else {
                 res = {success: false};
@@ -34,15 +39,15 @@ userControllers = {
         }
     },
 
-    //应该还要调用checkNickname,怎么调用
     // Route: initializeUser
     // Event: initialize user
     // Data: {nickname: string, signature: string, avatar: png}
     initializeUser: function (socket) {
         return function (data) {
-            if (!totalusers[data.nickname]) {             //在所有的用户中检查该昵称是否已被使用
+            //在所有的用户中检查该昵称是否已被使用
+            if (!totalusers[data.nickname]) {
                 if (!data.signature) {
-                    data.signature = "����˺�����ʲôҲû����";
+                    data.signature = "please write your signature";
                 }
                 else{
                     signature[socket.id] =data.signature;
@@ -92,19 +97,24 @@ userControllers = {
     // Data: {name: string, password: string(optional)}
     createRoom: function (socket) {
         return function (data) {
-            if (rooms[socket.id][data.name]) {                                                           //用户创建房间时检查name名字的房间是否已被创建
-                socket.emit('create room', {success: false, message: "�Դ���������ķ����Ѵ���"});   //返回消息：该房间已存在
+            //用户创建房间时检查name名字的房间是否已被创建
+            if (rooms[socket.id][data.name]) {
+                //返回消息：该房间已存在
+                socket.emit('create room', {success: false, message: "this room is existed"});
             } else {
-                if (data.password) {                                                                     //password:加入房间的密码（可选）
-                    rooms[socket.id][data.name] = {password: data.password, users:username[socket.id]};        //users:当前房间包含的用户
+                //password:加入房间的密码（可选）
+                if (data.password) {
+                    rooms[socket.id][data.name] = {password: data.password, users:username[socket.id]};
                     totalrooms[data.name] = {password: data.password, users:username[socket.id]};
                 } else {
                     rooms[socket.id][data.name] = {users:username[socket.id]};
                     totalrooms[data.name] = { users:username[socket.id]};
                 }
                 socket.join(data.name);
-                socket.rooms.push(data.name);                                                            //将新创建的房间加入创建该房间用户的房间队列中
-                totalrooms.push(data.name);                                                             //将新创建的房间加入总的房间队列中
+                //将新创建的房间加入创建该房间用户的房间队列中
+                socket.rooms.push(data.name);
+                //将新创建的房间加入总的房间队列中
+                totalrooms.push(data.name);
                 socket.emit('create room', {success: true, room: data.name});
             }
         }
@@ -115,12 +125,12 @@ userControllers = {
     // Data: {name: string, password: string(if required)}
     joinRoom: function (socket) {
         return function (data) {
-            if (totalrooms[data.name]) {                                             //在所有的房间中检查要加入的房间是否存在
-                if (totalrooms[data.name]['password'] == data.password) {        //name:房间名
+            //在所有的房间中检查要加入的房间是否存在
+            if (totalrooms[data.name]) {
+                if (totalrooms[data.name]['password'] == data.password) {
 
                     rooms[socket.id][data.name]['users'].push(username[socket.id]);
-                    totalrooms[data.name]['users'].push(username[socket.id])
-                    //socket.to(data.name).emit("someone join room", {room: data.name, user: username[socket.id]});
+                    totalrooms[data.name]['users'].push(username[socket.id]);
                     socket.join(data.name);
 
                     /*var roomUsers = {};
@@ -130,10 +140,12 @@ userControllers = {
                     rooms[socket.id].push(data.name);
                     socket.emit('join room', {success: true, room: data.name, users: totalrooms[data.name]['users']});
                 } else {
-                    socket.emit('join room', {success: false, message: "�÷�����Ҫ��������ṩ�����벻��ȷ"});//返回消息：密码不正确
+                    //返回消息：密码不正确
+                    socket.emit('join room', {success: false, message: "your password is throng"});
                 }
             } else {
-                socket.emit('join room', {success: false, message: "�÷��䲻����"});                                    //返回消息：该房间不存在
+                //返回消息：该房间不存在
+                socket.emit('join room', {success: false, message: "this room does not exist"});
             }
         }
     },
@@ -143,18 +155,18 @@ userControllers = {
     // Data: {name: string}
     leaveRoom: function (socket) {
         return function (data) {
-            /*var index3 = rooms[socket.id][data.name]['users'].indexOf(username[socket.id]);
-             utils.delElByIndex(rooms[socket.id][data.name]['users'], index3);*/
-            var index = totalrooms[data.name]['users'].indexOf(username[socket.id]);   //将该用户从房间包含的用户中删除
+            //将该用户从房间包含的用户中删除
+            var index = totalrooms[data.name]['users'].indexOf(username[socket.id]);
             utils.delElByIndex(totalrooms[data.name]['users'], index);
             socket.leave(data.name);
-            index = rooms[socket.id].indexOf(data.name);                              //将该房间从用户加入的房间中删除
+            //将该房间从用户加入的房间中删除
+            index = rooms[socket.id].indexOf(data.name);
             utils.delElByIndex(rooms[socket.id], index);
 
 
             if (totalrooms[data.name]['users'].length==0) {
-                //delete rooms[data.name];
-                index = totalrooms.indexOf(data.name);                        //将空房间删除
+                //将空房间删除
+                index = totalrooms.indexOf(data.name);
                 utils.delElByIndex(totalrooms,index);
             } else {
                 socket.to(data.name).emit("someone leave room", {room: data.name, user: username[socket.id]});
@@ -168,19 +180,16 @@ userControllers = {
     // Data: {room: string, nickname: string, avatar: png, text: string}
     sendTextMessage: function (socket) {
         return function (data) {
-            /*if(data.room == 'default-room') {
-             socket.broadcast.emit('receive text message', data);
-             }else {
-             socket.to(data.room).emit('receive text message', data);
-             }*/
-            if(totalrooms[data.room]){                                                           //检查该房间是否存在
-                if(totalrooms[data.room]['users'].indexOf(data.nickname)){                    //检查该用户是否位于该房间
+            //检查该房间是否存在
+            if(totalrooms[data.room]){
+                //检查该用户是否位于该房间
+                if(totalrooms[data.room]['users'].indexOf(data.nickname)){
                     socket.to.(data.room).emit('send text message',{success: true, sender: data.nickname, room: data.room, avatar: data.avatar, text: data.text});
                 }else{
-                    socket.emit('send text message',{success: false, message: ' this room do not have this user'});
+                    socket.emit('receive text message',{success: false, message: ' this room do not have this user'});
                 }
             }else{
-                socket.emit('send text message',{success: false, message: 'do not have this room'});
+                socket.emit('receive text message',{success: false, message: 'do not have this room'});
             }
             //socket.emit('send text message', data);
         }
@@ -191,10 +200,12 @@ userControllers = {
     // Data: {room: string, nickname: string, avatar: string, content: object}
     shareFile: function (socket) {
         return function (stream, data) {
-            var filePath = path.join(config.paths.contentPath, 'upload/shared', data.room, data.content.name),   //文件path
-                dirPath = path.dirname(filePath);                                                                         //通过文件path得到directory
-
-            if (!fs.existsSync(dirPath)) {                                                                                //检查文件是否存在
+             //文件path
+            var filePath = path.join(config.paths.contentPath, 'upload/shared', data.room, data.content.name),
+            //通过文件path得到directory
+                dirPath = path.dirname(filePath);
+            //检查文件是否存在
+            if (!fs.existsSync(dirPath)) {
                 fs.mkdirSync(dirPath);
             }
 

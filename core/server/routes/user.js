@@ -17,6 +17,8 @@ userRoutes = function (socket) {
 
     socket.on('join room', user.joinRoom(socket));
 
+    //socket.on('double chatter',user.doublePersonChat(socket));
+
     socket.on('leave room', user.leaveRoom(socket));
 
     socket.on('send text message', user.sendTextMessage(socket));
