@@ -19,19 +19,18 @@ whisper是[iCollege](https://42.96.195.83/guanggu/icollege)项目的即时通信
       肌肉为田土。发为星辰。皮肤为草木。齿骨为金石。精髓为珠玉。汗流为雨泽。身之诸虫。因风所感。化为黎甿。  
       -- 《三五历纪》 徐整
       
-    * **由于项目仍然处于早期版本，使用过程中会出现大量的调试输出。**
     * 项目结构及基本启动代码完成。([01d10efd](https://42.96.195.83/association/whisper/commit/01d10efdaec7724b394b8ad3d297db547bbe0eed))  
-
+    * 去除多余的调试信息。（[0f056d2](https://42.96.195.83/association/whisper/commit/0f056d23d45b96fe54e6fb5723393f1997fb095f)）
+    * 基本的错误/提示回报机制完成。（[0f056d2](https://42.96.195.83/association/whisper/commit/0f056d23d45b96fe54e6fb5723393f1997fb095f)）
+    * 自述文件整理
+    
 ## 即将到来
 **警告：在这里出现的内容将在以后版本中出现。  
-但是我们无法承诺每一个特性的可用时间。  
-您可以通过每一条信息末尾的commit编号来找到具体的实现版本。**  
+但是我们无法承诺每一个特性的可用时间。**  
 
-* 去除多余的调试信息。  
-* 中间件、路由和控制器模块完善。
-* （完成）建立完整的错误/提示回报机制。（[e59f6a39](https://42.96.195.83/association/whisper/commit/e59f6a39ab082ff70d04084fb90a1eda14979b10)）
+* （重要）修正导致0.12版本node.js引擎上进行独立安装时出现的V8引擎解析错误。
+* 中间件和IM模块完善。
 * 建立基于grunt的早期测试框架。  
-* （优先）由于本项目不再需要某些机制，我们正在考虑放弃使用express而改用dnode。  
 * 基于markdown语法的代码自文档化。
 
 ## 我该怎样……
@@ -39,6 +38,10 @@ whisper是[iCollege](https://42.96.195.83/guanggu/icollege)项目的即时通信
 #### 首先
 本项目需要0.12版本的Node.js引擎。  
 为了您的服务器安全，我们建议您从[Node.js](http://www.nodejs.org/)官方网站下载对应版本。  
+
+**（可能）由于目前使用的某（几）个依赖的版本问题，在0.12版本的Node.js引擎环境中进行独立安装可能出现V8引擎解析错误。
+我们已经知晓这一问题，并将在近期修复。
+目前已知的解决办法是使用0.10版本的Node.js引擎环境中进行安装。欢迎在[这里](https://42.96.195.83/association/whisper/issues/1)讨论**
 
 本项目的一些依赖需要使用Python 2.7（或以上版本）和Microsoft Visual C++ 2012（或以上版本，Windows环境下）或对应环境下的C++编译器。  
 为了您的服务器安全，同样建议您从官方网站和/或可信赖的源下载对应版本。
@@ -61,7 +64,6 @@ whisper是[iCollege](https://42.96.195.83/guanggu/icollege)项目的即时通信
 [bower](http://bower.io/), 
 [bytes](https://github.com/visionmedia/bytes.js), 
 [colors](https://github.com/Marak/colors.js), 
-[express](http://expressjs.com/), 
 [grunt](http://gruntjs.com/), 
 [lodash](https://lodash.com/), 
 [method-override](https://github.com/expressjs/method-override), 
