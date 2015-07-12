@@ -1,5 +1,5 @@
 /**
- * Created by Íò²© on 2015/5/14.
+ * Created by é™ˆç‘ž on 2015/7/12.
  */
 var ss         = require('socket.io-stream'),
     user       = require('../controllers/user'),
@@ -7,15 +7,17 @@ var ss         = require('socket.io-stream'),
 
 userRoutes = function (socket) {
 
-    socket.on('check nickname', user.checkNickname(socket));
+    socket.on('check username', user.checkUsername(socket));
 
     socket.on('initialize user', user.initializeUser(socket));
 
-    socket.on('disconnect', user.signOff(socket));
+    //socket.on('disconnect', user.signOff(socket));
 
     socket.on('create room', user.createRoom(socket));
 
     socket.on('join room', user.joinRoom(socket));
+
+    //socket.on('double chatter',user.doublePersonChat(socket));
 
     socket.on('leave room', user.leaveRoom(socket));
 
