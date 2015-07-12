@@ -1,5 +1,5 @@
 /**
- * Created by �� on 2015/5/14.
+ * Created by 陈瑞 on 2015/7/12.
  */
 var ss         = require('socket.io-stream'),
     user       = require('../controllers/user'),
@@ -7,7 +7,7 @@ var ss         = require('socket.io-stream'),
 
 userRoutes = function (socket) {
 
-    socket.on('check nickname', user.checkNickname(socket));
+    socket.on('check username', user.checkUsername(socket));
 
     socket.on('initialize user', user.initializeUser(socket));
 
