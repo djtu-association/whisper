@@ -1,5 +1,5 @@
 /**
- * Created by 陈瑞 on 2015/7/12.
+ * Created by 陈瑞 on 2015/7/13.
  */
 var ss         = require('socket.io-stream'),
     user       = require('../controllers/user'),
@@ -23,9 +23,9 @@ userRoutes = function (socket) {
 
     socket.on('send text message', user.sendTextMessage(socket));
 
-    ss(socket).on('share file', user.shareFile(socket));
+    //ss(socket).on('share file', user.shareFile(socket));
 
-    socket.on('send audio message', user.sendAudioMessage(socket));
+    //socket.on('send audio message', user.sendAudioMessage(socket));
 
 };
 
