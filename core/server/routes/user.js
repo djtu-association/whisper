@@ -23,9 +23,9 @@ userRoutes = function (socket) {
 
     socket.on('send text message', user.sendTextMessage(socket));
 
-    ss(socket).on('share file', user.shareFile(socket));
+    //ss(socket).on('share file', user.shareFile(socket));
 
-    socket.on('send audio message', user.sendAudioMessage(socket));
+    //socket.on('send audio message', user.sendAudioMessage(socket));
 
 };
 
