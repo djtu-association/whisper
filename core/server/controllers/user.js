@@ -1,5 +1,5 @@
 /**
- * Created by 陈瑞 on 2015/7/13.
+ * Created by 陈瑞 on 2015/7/12.
  */
 
 var path          = require('path'),
@@ -10,10 +10,10 @@ var path          = require('path'),
     config        = require('../../shared/config'),
     utils         = require('../../shared/utils'),
     userControllers;
-avatar = {},
-    //所有的用户
+    avatar = {},
+     //所有的用户
     totalusers = {},
-    //某一房间里的所有用户
+     //某一房间里的所有用户
     users ={},
     //所有的房间
     totalrooms = {},
@@ -23,19 +23,19 @@ avatar = {},
     signature = {};
 
 userControllers = {
-    // Route: checkUsername
-    // Event: check username
+    // Route: checkNickname
+    // Event: check nickname
     // Data: {username: string}
     checkUsername: function (socket) {
         return function (data) {
-            //在所有的用户中检查该昵称是否已被使用
-            if (totalusers[data.username]) {
-                socket.emit("check username ended", {success: true});
+            var res;
+            if (!totalusers[data.username]) {             //在所有的用户中检查该昵称是否已被使用
+                res = {success: true};
             } else {
-                socket.emit("check nickname ended", {success: false});
+                res = {success: false};
             }
+            socket.emit("check nickname ended", res);
         }
-
     },
 
     // Route: initializeUser
@@ -60,11 +60,10 @@ userControllers = {
                 socket.emit('initialize user ended', {success: true, nickname: data.nickname, signature:data.signature, avatar: data.avatar});
                 //socket.broadcast.emit('user join', {user: data});
             } else {
-                socket.emit('initialize user ended', {success: false, message: 'this username has been used'});
+                socket.emit('initialize user', {success: false, message: 'this username has been used'});
             }
         }
     },
-
     /*
      // Route: signOff
      // Event: disconnect
@@ -89,8 +88,6 @@ userControllers = {
      }
      },
      */
-
-
     // Route: createRoom
     // Event: create room
     // Data: {name: string, password: string(optional)}
@@ -99,7 +96,7 @@ userControllers = {
             //用户创建房间时检查name名字的房间是否已被创建
             if (totalrooms[data.name]) {
                 //返回消息：该房间已存在
-                socket.emit('create room ended', {success: false, message: "this room has existed"});
+                socket.emit('create room', {success: false, message: "this room has existed"});
             } else {
                 socket.join(data.name);
                 //password:加入房间的密码（可选）
@@ -170,7 +167,7 @@ userControllers = {
                 index = totalrooms.indexOf(data.name);
                 utils.delElByIndex(totalrooms,index);
             } else {
-                socket.to(data.name).emit("someone leave room", {user: socket.username});
+                socket.to(data.name).emit("someone leave room", {room: data.name, user: socket.username});
             }
             socket.emit("leave room ended", {success: true, room: data.name, user: socket.username});
         }
@@ -185,8 +182,7 @@ userControllers = {
             if(totalrooms[data.room]){
                 //检查该用户是否位于该房间
                 if(totalrooms[data.room]['users'].indexOf(data.nickname)){
-                    socket.to.(data.room).emit('sends text message',{sender: data.nickname, avatar: data.avatar, text: data.text});
-                    //socket.emit('send text message ended',{success: true, sender: socket.username, room: data.room, text: data.text});
+                    socket.to.(data.room).emit('send text message ended',{success: true, sender: data.username, room: data.room, text: data.text});
                 }else{
                     socket.emit('send text message ended',{success: false, message: ' this room does not have this user'});
                 }
@@ -196,57 +192,56 @@ userControllers = {
         }
     },
 
-    /*
-     // Route: shareFile
-     // Event: share file
-     // Data: {room: string, nickname: string, avatar: string, content: object}
-     shareFile: function (socket) {
-     return function (stream, data) {
-     //文件path
-     var filePath = path.join(config.paths.contentPath, 'upload/shared', data.room, data.content.name),
-     dirPath = path.dirname(filePath);
+    // Route: shareFile
+    // Event: share file
+    // Data: {room: string, nickname: string, avatar: string, content: object}
+    shareFile: function (socket) {
+        return function (stream, data) {
+            //文件path
+            var filePath = path.join(config.paths.contentPath, 'upload/shared', data.room, data.content.name),
+                dirPath = path.dirname(filePath);
 
-     //检查文件是否存在
-     if (!fs.existsSync(dirPath)) {
-     fs.mkdirSync(dirPath);
-     }
+            //检查文件是否存在
+            if (!fs.existsSync(dirPath)) {
+                fs.mkdirSync(dirPath);
+            }
 
-     stream.on('end', function () {
-     data.content = {name: data.content.name, type: data.content.type, size: bytes(data.content.size), link: "upload/shared/"+data.room+"/"+data.content.name};
-     socket.emit('share file', data);
-     socket.to(data.room).emit('shares file', data);
-     });
+            stream.on('end', function () {
+                data.content = {name: data.content.name, type: data.content.type, size: bytes(data.content.size), link: "upload/shared/"+data.room+"/"+data.content.name};
+                socket.emit('share file', data);
+                socket.to(data.room).emit('share file ended', data);
+            });
 
-     stream.pipe(fs.createWriteStream(filePath));
-     }
-     },
+            stream.pipe(fs.createWriteStream(filePath));
+        }
+    },
 
-     // Route: sendAudioMessage
-     // Event: send audio message
-     // Data: {room: string, nickname: string, avatar: string, content: object}
-     // object: {type: string, dataURL: string}
-     sendAudioMessage: function (socket) {
-     return function(data) {
-     var fileName = utils.uid(10)+".wav",
-     filePath = path.join(config.paths.contentPath, 'upload/audio', data.room, fileName),
-     dirPath = path.dirname(filePath),
-     dataURL = data.content.dataURL,
-     fileBuffer;
+    // Route: sendAudioMessage
+    // Event: send audio message
+    // Data: {room: string, nickname: string, avatar: string, content: object}
+    // object: {type: string, dataURL: string}
+    sendAudioMessage: function (socket) {
+        return function(data) {
+            var fileName = utils.uid(10)+".wav",
+                filePath = path.join(config.paths.contentPath, 'upload/audio', data.room, fileName),
+                dirPath = path.dirname(filePath),
+                dataURL = data.content.dataURL,
+                fileBuffer;
 
 
-     if (!fs.existsSync(dirPath)) {
-     fs.mkdirSync(dirPath);
-     }
+            if (!fs.existsSync(dirPath)) {
+                fs.mkdirSync(dirPath);
+            }
 
-     dataURL = dataURL.split(',').pop();
-     fileBuffer = new Buffer(dataURL, 'base64');
-     fs.writeFileSync(filePath, fileBuffer);
+            dataURL = dataURL.split(',').pop();
+            fileBuffer = new Buffer(dataURL, 'base64');
+            fs.writeFileSync(filePath, fileBuffer);
 
-     data.content = {link: 'upload/audio/'+data.room+'/'+fileName};
-     socket.emit('send audio message ended', data);
-     socket.to(data.room).emit('receive audio message ended', data);
-     }
-     }*/
+            data.content = {link: 'upload/audio/'+data.room+'/'+fileName};
+            socket.emit('send audio message ended', data);
+            socket.to(data.room).emit('receive audio message ended', data);
+        }
+    }
 };
 
 module.exports = userControllers;
