@@ -1,5 +1,5 @@
 /**
- * Created by 陈瑞 on 2015/7/12.
+ * Created by 陈瑞 on 2015/7/13.
  */
 
 var path          = require('path'),
@@ -133,7 +133,7 @@ userControllers = {
                 if(totalrooms[data.name]['password']){
                     if (totalrooms[data.name]['password'] == data.password) {
                         socket.rooms.push(data.name);
-                        totalrooms[data.name]['users'].push(socket.username)
+                        totalrooms[data.name]['users'].push(socket.username);
                         socket.join(data.name);
                         socket.emit('join room ended', {success: true, room: data.name, users: totalrooms[data.name]['users']});
                     } else {
@@ -142,7 +142,7 @@ userControllers = {
                     }
                 }else{
                     socket.rooms.push(data.name);
-                    totalrooms[data.name]['users'].push(socket.username)
+                    totalrooms[data.name]['users'].push(socket.username);
                     socket.join(data.name);
                     socket.emit('join room ended', {success: true, room: data.name, users: totalrooms[data.name]['users']});
                 }
@@ -194,7 +194,7 @@ userControllers = {
                 socket.emit('send text message ended',{success: false, message: 'this room dose not exist'});
             }
         }
-    },
+    }
 
     /*
     // Route: shareFile
